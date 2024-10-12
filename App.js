@@ -1,18 +1,22 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Login from './Login';
-import Home from './Home';
-import CalendarScreen from './CalendarScreen';
-import MapScreen from './MapScreen';
-import ClockScreen from './ClockScreen';
+import Login from './paginas/Login';
+import Home from './paginas/Home';
+import CalendarScreen from './paginas/CalendarScreen';
+import MapScreen from './paginas/MapScreen';
+import ClockScreen from './paginas/ClockScreen';
+import Tarefas from './paginas/Tarefas';
 
 const Stack = createStackNavigator();
 
+
 const App = () => {
+  
   return (
+    <>
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Tarefas">
         <Stack.Screen 
           name="Login" 
           component={Login} 
@@ -21,7 +25,7 @@ const App = () => {
         <Stack.Screen 
           name="Home" 
           component={Home} 
-          options={{ headerShown: false }} 
+          options={{ headerShown: true }} 
         />
         <Stack.Screen 
           name="Calendar" 
@@ -38,8 +42,15 @@ const App = () => {
          component={ClockScreen}
           options={{ headerShown: true, title: 'Clock' }}
           />
+          <Stack.Screen 
+         name="Tarefas"
+         component={Tarefas}
+          options={{ headerShown: false, title: 'Tarefas' }}
+          />
       </Stack.Navigator>
     </NavigationContainer>
+
+    </>
   );
 };
 
