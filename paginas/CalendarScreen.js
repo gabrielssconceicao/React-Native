@@ -1,38 +1,56 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Alert, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
 import { Agenda } from 'react-native-calendars';
+import { useEndereco } from '../hooks/useEnderecos';
 
 const CalendarScreen = () => {
-  const [selectedDate, setSelectedDate] = useState();
-  const today = new Date();
+  const [items, setItems] = useState({});
+  const { enderecos, loadEnderecos } = useEndereco();
+  useEffect(loadEnderecos, [loadEnderecos]);
 
-  const handleDayPress = (day) => {
-    setSelectedDate(day.dateString);
-    Alert.alert('Selected Date', `You selected ${day.dateString}`);
-  };
+  useEffect(() => {
+    // Função para agrupar endereços por data
+    const groupedEnderecos = enderecos.reduce((acc, curr) => {
+      const { data, endereco } = curr;
+
+      // Se a data ainda não existir no acumulador, crie um array vazio para ela
+      if (!acc[data]) {
+        acc[data] = [];
+      }
+
+      // Adiciona o endereço ao array correspondente à data
+      acc[data].push({ endereco });
+      return acc;
+    }, {});
+
+    setItems(groupedEnderecos);
+    console.log(groupedEnderecos)
+  }, [enderecos]);
+
   //https://www.npmjs.com/package/react-native-calendars/v/1.1286.0
   return (
     <View style={styles.container}>
       <Agenda
-        items={{
-          '2024-10-11': [{ name: 'item 1 - any js object' }],
-          '2024-10-12': [{ name: 'item 2 - any js object', height: 80 }],
-          '2024-10-13': [],
-          '2024-10-14': [
-            { name: 'item 3 - any js object' },
-            { name: 'any js object' },
-          ],
-        }}
+        items={items}
         renderItem={(item, firstItemInDay) => {
+          console.log(item);
+          console.log(firstItemInDay);
           return (
-            <View style={{ backgroundColor: '#f00', flex: 1 }}>
-              <Text>{item.name}</Text>
+            <View style={styles.item}>
+              <Text>{item.endereco}</Text>
             </View>
           );
         }}
-        renderEmptyDate={() => {
-          return <Text>Vazio</Text>;
-        }}
+        renderEmptyDate={() => (
+          <View style={styles.emptyDate}>
+            <Text>Sem endereços</Text>
+          </View>
+        )}
+        renderEmptyData={() => (
+          <View style={styles.emptyDate}>
+            <Text>Nada encontrado</Text>
+          </View>
+        )}
         showClosingKnob={true}
       />
     </View>
@@ -43,6 +61,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  item: {
+    backgroundColor: '#f9f9f9',
+    padding: 20,
+    marginVertical: 10,
+    marginHorizontal: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  emptyDate: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
 });
 
