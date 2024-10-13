@@ -1,12 +1,12 @@
 import {useState,useEffect} from 'react'
-import {Text,View,StyleSheet,TouchableOpacity,FlatList} from 'react-native';
+import {Text,View,StyleSheet,TouchableOpacity,FlatList,Button} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import { useNavigation } from '@react-navigation/native';
 import {useEndereco} from '../hooks/useEnderecos'
 export default function Tarefas() {
   const navigation = useNavigation()
-  const {enderecos,loadEnderecos} = useEndereco()
+  const {enderecos,loadEnderecos,deleteEndereco} = useEndereco()
 
   useEffect(loadEnderecos,[loadEnderecos])
   return (
@@ -21,7 +21,7 @@ export default function Tarefas() {
             <View key={item.id}>
               <Text>{item.data}</Text>
               <Text>{item.endereco}</Text>
-
+              <Button title={"Apagar"} onPress={()=>deleteEndereco(item.id)}/>
             </View>
           )}
         />
