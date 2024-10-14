@@ -1,16 +1,27 @@
-import {useState,useEffect} from 'react'
-import {Text,View,StyleSheet,TouchableOpacity,FlatList,Button,List} from 'react-native';
+import { useCallback } from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Button,
+  List,
+} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import { useNavigation } from '@react-navigation/native';
-import {useEndereco} from '../hooks/useEnderecos'
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useEndereco } from '../hooks/useEnderecos';
 export default function Tarefas() {
-  const navigation = useNavigation()
-  const {enderecos,loadEnderecos,deleteEndereco} = useEndereco()
+  const navigation = useNavigation();
+  const { enderecos, loadEnderecos, deleteEndereco } = useEndereco();
 
-  useEffect(loadEnderecos,[loadEnderecos])
+  useFocusEffect(
+    useCallback(() => {
+      loadEnderecos();
+    }, [loadEnderecos])
+  );
   return (
-
     <View style={styles.container}>
       <View style={styles.containerTarefas}>
         <FlatList
@@ -21,35 +32,45 @@ export default function Tarefas() {
             <View key={item.id}>
               <Text>{item.data}</Text>
               <Text>{item.endereco}</Text>
-              <Button title={"Apagar"} onPress={()=>deleteEndereco(item.id)}/>
+              <Button
+                title={'Apagar'}
+                onPress={() => deleteEndereco(item.id)}
+              />
             </View>
           )}
         />
       </View>
-      <TouchableOpacity style={styles.addTarefa} onPress={()=>{}}>
-        <MaterialIcons name="add" size={60} color="#333"/>
+      <TouchableOpacity style={styles.addTarefa} onPress={() => {}}>
+        <MaterialIcons
+          name="add"
+          size={60}
+          color="#333"
+          onPress={() => navigation.navigate('CadastroEndereco')}
+        />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.homeBtn} onPress={()=>navigation.navigate('Home')}>
-        <MaterialIcons name="home" size={60} color="#333"/>
+      <TouchableOpacity
+        style={styles.homeBtn}
+        onPress={() => navigation.navigate('Home')}>
+        <MaterialIcons name="home" size={60} color="#333" />
       </TouchableOpacity>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     backgroundColor: '#ccc',
     paddingTop: 50,
     paddingLeft: 20,
     paddingRight: 20,
-    position:'relative',
-    gap: 20
+    position: 'relative',
+    gap: 20,
   },
   containerTarefas: {
-    flex:1,
+    flex: 1,
     width: '100%',
-    gap:30
+    gap: 30,
   },
   addTarefa: {
     position: 'absolute',
@@ -61,7 +82,7 @@ const styles = StyleSheet.create({
     height: 80,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   homeBtn: {
     position: 'absolute',
@@ -73,6 +94,6 @@ const styles = StyleSheet.create({
     height: 80,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
-  }
-})
+    justifyContent: 'center',
+  },
+});
