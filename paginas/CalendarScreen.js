@@ -38,8 +38,6 @@ const CalendarScreen = () => {
       <Agenda
         items={items}
         renderItem={(item, firstItemInDay) => {
-          console.log(item);
-          console.log(firstItemInDay);
           return (
             <View style={styles.item}>
               <Text>{item.endereco}</Text>

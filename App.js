@@ -49,7 +49,7 @@ const App = () => {
           <Stack.Screen
             name="CadastroEndereco"
             component={CadastroEndereco}
-            options={{ headerShown: false, title: 'CadastroEndereco' }}
+            options={{ headerShown: true, title: 'CadastroEndereco' }}
           />
         </Stack.Navigator>
       </NavigationContainer>
