@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,6 +12,25 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useEndereco } from '../hooks/useEnderecos';
 import axios from 'axios';
 
+// Função para buscar coordenadas via Nominatim
+const fetchCoordinates = async (address) => {
+  const encodedAddress = encodeURIComponent(address);
+  const response = await axios.get(
+    `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&addressdetails=1`
+  );
+
+  if (response.data.length > 0) {
+    const location = response.data[0];
+    return {
+      latitude: parseFloat(location.lat),
+      longitude: parseFloat(location.lon),
+    };
+  } else {
+    console.error('Endereço não encontrado');
+    return null;
+  }
+};
+
 const CadastroEndereco = () => {
   const [data, setData] = useState(new Date());
   const [dataString, setDataString] = useState('');
@@ -20,9 +39,19 @@ const CadastroEndereco = () => {
   const [cep, setCep] = useState('');
   const [address, setAddress] = useState(null);
 
-  const handleAddEndereco = () => {
+  const handleAddEndereco = async () => {
     if (!dataString || !address) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      return;
+    }
+
+    const fullAddress = `${address.logradouro}, ${address.localidade}, ${address.uf}`;
+    
+    // Busca as coordenadas do endereço
+    const coordinates = await fetchCoordinates(fullAddress);
+    
+    if (!coordinates) {
+      Alert.alert('Erro', 'Não foi possível encontrar as coordenadas do endereço.');
       return;
     }
 
@@ -31,7 +60,10 @@ const CadastroEndereco = () => {
       logradouro: address.logradouro,
       localidade: address.localidade,
       uf: address.uf,
+      latitude: coordinates.latitude,   // Inclui latitude
+      longitude: coordinates.longitude, // Inclui longitude
     };
+
     saveEnderecos(newEndereco);
     Alert.alert('Sucesso', 'Endereço cadastrado com sucesso!');
 
@@ -39,6 +71,7 @@ const CadastroEndereco = () => {
     setCep('');
     setData(new Date());
     setDataString('');
+    setAddress(null);
   };
 
   const showDatepicker = () => {
@@ -112,18 +145,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-  },
-  item: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
+  
 });
 
 export default CadastroEndereco;
