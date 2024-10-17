@@ -31,7 +31,7 @@ export default function Tarefas() {
           renderItem={({ item }) => (
             <View key={item.id}>
               <Text>{item.data}</Text>
-              <Text>{item.endereco}</Text>
+              <Text>{item.logradouro}</Text>
               <Button
                 title={'Apagar'}
                 onPress={() => deleteEndereco(item.id)}

@@ -6,28 +6,37 @@ import {
   Alert,
   TextInput,
   SafeAreaView,
+  View,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useEndereco } from '../hooks/useEnderecos';
+import axios from 'axios';
+
 const CadastroEndereco = () => {
   const [data, setData] = useState(new Date());
   const [dataString, setDataString] = useState('');
   const [showPicker, setShowPicker] = useState(false);
-  const [endereco, setEndereco] = useState('');
   const { saveEnderecos } = useEndereco();
+  const [cep, setCep] = useState('');
+  const [address, setAddress] = useState(null);
 
   const handleAddEndereco = () => {
-    if (!dataString || !endereco) {
+    if (!dataString || !address) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
 
-    const newEndereco = { data: dataString, endereco };
+    const newEndereco = {
+      data: dataString,
+      logradouro: address.logradouro,
+      localidade: address.localidade,
+      uf: address.uf,
+    };
     saveEnderecos(newEndereco);
     Alert.alert('Sucesso', 'Endereço cadastrado com sucesso!');
 
     // Limpa os campos após o cadastro
-    setEndereco('');
+    setCep('');
     setData(new Date());
     setDataString('');
   };
@@ -41,6 +50,19 @@ const CadastroEndereco = () => {
     setShowPicker(false);
     setData(currentDate);
     setDataString(currentDate.toISOString().split('T')[0]); // Formato YYYY-MM-DD
+  };
+
+  const fetchAddress = async () => {
+    try {
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+      if (!response.data.erro) {
+        setAddress(response.data);
+      } else {
+        alert('CEP inválido');
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -61,11 +83,19 @@ const CadastroEndereco = () => {
       )}
       <Text>Data selecionada: {dataString}</Text>
       <TextInput
-        style={styles.input}
-        placeholder="Endereço"
-        value={endereco}
-        onChangeText={setEndereco}
+        placeholder="Digite o CEP"
+        value={cep}
+        onChangeText={setCep}
+        keyboardType="numeric"
       />
+      <Button title="Buscar Endereço" onPress={fetchAddress} />
+      {address && (
+        <View>
+          <Text>Rua: {address.logradouro}</Text>
+          <Text>Cidade: {address.localidade}</Text>
+          <Text>Estado: {address.uf}</Text>
+        </View>
+      )}
       <Button title="Cadastrar Endereço" onPress={handleAddEndereco} />
     </SafeAreaView>
   );

@@ -16,7 +16,7 @@ const CalendarScreen = () => {
   useEffect(() => {
     // Função para agrupar endereços por data
     const groupedEnderecos = enderecos.reduce((acc, curr) => {
-      const { data, endereco } = curr;
+      const { data, logradouro, uf,localidade } = curr;
 
       // Se a data ainda não existir no acumulador, crie um array vazio para ela
       if (!acc[data]) {
@@ -24,7 +24,7 @@ const CalendarScreen = () => {
       }
 
       // Adiciona o endereço ao array correspondente à data
-      acc[data].push({ endereco });
+      acc[data].push({ logradouro, uf,localidade });
       return acc;
     }, {});
 
@@ -40,7 +40,9 @@ const CalendarScreen = () => {
         renderItem={(item, firstItemInDay) => {
           return (
             <View style={styles.item}>
-              <Text>{item.endereco}</Text>
+              <Text>{item.logradouro}</Text>
+              <Text>{item.uf}</Text>
+              <Text>{item.localidade}</Text>
             </View>
           );
         }}
