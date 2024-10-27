@@ -6,16 +6,18 @@ import Home from './paginas/Home';
 import CalendarScreen from './paginas/CalendarScreen';
 import MapScreen from './paginas/MapScreen';
 import ClockScreen from './paginas/ClockScreen';
-import Tarefas from './paginas/Tarefas';
+import Obras from './paginas/Obras';
 import CadastroEndereco from './paginas/CadastroEndereco';
+import DatabaseProvider from './database/DatabaseProvider'
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
-    <>
+
+     <DatabaseProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Tarefas">
+        <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
             name="Login"
             component={Login}
@@ -27,14 +29,14 @@ const App = () => {
             options={{ headerShown: true }}
           />
           <Stack.Screen
-            name="Calendar"
+            name="Calendário"
             component={CalendarScreen}
-            options={{ headerShown: true, title: 'Calendar' }}
+            options={{ headerShown: true, title: 'Calendário' }}
           />
           <Stack.Screen
-            name="Map"
+            name="Mapa"
             component={MapScreen}
-            options={{ headerShown: true, title: 'Map' }}
+            options={{ headerShown: true, title: 'Mapa' }}
           />
           <Stack.Screen
             name="Clock"
@@ -42,9 +44,9 @@ const App = () => {
             options={{ headerShown: true, title: 'Clock' }}
           />
           <Stack.Screen
-            name="Tarefas"
-            component={Tarefas}
-            options={{ headerShown: false, title: 'Tarefas' }}
+            name="Obras"
+            component={Obras}
+            options={{ headerShown: true, title: 'Obras' }}
           />
           <Stack.Screen
             name="CadastroEndereco"
@@ -53,7 +55,7 @@ const App = () => {
           />
         </Stack.Navigator>
       </NavigationContainer>
-    </>
+    </DatabaseProvider>
   );
 };
 

@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFocusEffect } from '@react-navigation/native';
-import { useEndereco } from '../hooks/useEnderecos';
+// import { useEndereco } from '../hooks/useEnderecos';
 
 const MapScreen = () => {
   const [location, setLocation] = useState(null);

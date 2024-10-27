@@ -1,17 +1,16 @@
 import React, { useState, useCallback,useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Agenda } from 'react-native-calendars';
-import { useEndereco } from '../hooks/useEnderecos';
 import {  useFocusEffect } from '@react-navigation/native';
 
 const CalendarScreen = () => {
   const [items, setItems] = useState({});
-  const { enderecos, loadEnderecos } = useEndereco();
-  useFocusEffect(
-    useCallback(() => {
-      loadEnderecos();
-    }, [loadEnderecos])
-  );
+  // const { enderecos, loadEnderecos } = useEndereco();
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     loadEnderecos();
+  //   }, [loadEnderecos])
+  // );
 
   useEffect(() => {
     // Função para agrupar endereços por data
