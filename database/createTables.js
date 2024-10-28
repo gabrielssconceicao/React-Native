@@ -1,7 +1,6 @@
 import { openDatabaseAsync, SQLiteDatabase} from 'expo-sqlite';
 export async function createTables(database: SQLiteDatabase) {
   try {
-    await database.execAsync(`DROP TABLE IF EXISTS Obra`);
     await database.execAsync(`
     CREATE TABLE IF NOT EXISTS Obra (
           id INTEGER PRIMARY KEY AUTOINCREMENT,

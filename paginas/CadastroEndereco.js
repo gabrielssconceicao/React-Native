@@ -72,7 +72,7 @@ const CadastroEndereco = () => {
       cep,
       numero,
       complemento,
-      cidade: fullAdress.cidade,
+      cidade: fullAdress.localidade,
       rua: fullAdress.logradouro,
       bairro: fullAdress.bairro,
       latitude: 3.54,
