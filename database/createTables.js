@@ -1,15 +1,23 @@
-import { type SQLiteDatabase } from 'expo-sqlite';
+import { openDatabaseAsync, SQLiteDatabase} from 'expo-sqlite';
 export async function createTables(database: SQLiteDatabase) {
-  await database.execAsync(`
+  try {
+    await database.execAsync(`DROP TABLE IF EXISTS Obra`);
+    await database.execAsync(`
     CREATE TABLE IF NOT EXISTS Obra (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nome TEXT NOT NULL,
-      data TEXT NOT NULL,
-      rua TEXT NOT NULL,
-      cidade TEXT NOT NULL,
-      bairro TEXT NOT NULL,
-      latitude REAL,
-      longitude REAL
-    );
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          nome TEXT ,
+          data TEXT ,
+          cep TEXT ,
+          numero INTEGER ,
+          complemento TEXT,
+          rua TEXT ,
+          bairro TEXT ,
+          cidade TEXT ,
+          latitude REAL ,
+          longitude REAL 
+      );
   `);
+  } catch (error) {
+    throw error
+  } 
 }

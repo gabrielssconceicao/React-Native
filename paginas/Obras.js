@@ -17,6 +17,7 @@ export default function Obras() {
     const getObras = async()=>{
       const {result} =await list();
       setObras(result);
+      console.log(result)
     }
 
     getObras();

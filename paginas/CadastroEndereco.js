@@ -1,124 +1,163 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   StyleSheet,
   Text,
   Button,
   Alert,
-  TextInput,
   SafeAreaView,
   View,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { fetchAddress } from '../utils/fetchCep';
+import { Input } from '../components/Input';
 import { useObraDatabase } from '../database/useObraDatabase';
+import axios from 'axios';
+// Função para buscar coordenadas via Nominatim
+const fetchCoordinates = async (address) => {
+  const encodedAddress = encodeURIComponent(address);
+  const response = await axios.get(
+    `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&addressdetails=1`
+  );
+  if (response.data.length > 0) {
+    console.log(response.data);
+    const location = response.data[0];
+    return {
+      latitude: parseFloat(location.lat),
+      longitude: parseFloat(location.lon),
+    };
+  } else {
+    console.error('Endereço não encontrado');
+    return null;
+  }
+};
+
 const CadastroEndereco = () => {
-  // State variables
   const [data, setData] = useState(new Date());
   const [dataString, setDataString] = useState('');
   const [showPicker, setShowPicker] = useState(false);
   const [cep, setCep] = useState('');
   const [fullAdress, setFullAdress] = useState(null);
-
-  const { create } = useObraDatabase();
-  // Handlers
-  const resetFields = () => {
-    setCep('');
-    setData(new Date());
-    setDataString('');
+  const [numero, setNumero] = useState('');
+  const [complemento, setComplemento] = useState('');
+  const [nome, setNome] = useState('');
+  const useObra = useObraDatabase();
+  const showDatepicker = () => {
+    setShowPicker(true);
   };
-
-  const showDatepicker = () => setShowPicker(true);
 
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || data;
     setShowPicker(false);
     setData(currentDate);
-    setDataString(currentDate.toISOString().split('T')[0]);
-  };
-
-  const handleDisable = () => {
-    return !(cep && dataString && fullAdress);
+    setDataString(currentDate.toISOString().split('T')[0]); // Formato YYYY-MM-DD
   };
 
   const handleCep = async () => {
     try {
-      console.log(cep);
-      const { adress } = await fetchAddress(cep);
-      console.log(adress);
-      setFullAdress(adress);
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+      console.log(response);
+      setFullAdress(response.data);
     } catch (error) {
-      Alert.alert('Erro', 'Erro ao buscar cep');
+      Alert.alert('Error', error.message);
     }
   };
 
-  const cadastrar = async () => {
+  const handleDisableBtn = () => {
+    return !(cep && dataString && fullAdress && numero  && nome);
+  };
+
+  const create = async () => {
     const obra = {
+      nome,
       data: dataString,
-      nome: 'Teste',
+      cep,
+      numero,
+      complemento,
+      cidade: fullAdress.cidade,
       rua: fullAdress.logradouro,
-      cidade: fullAdress.localidade,
       bairro: fullAdress.bairro,
-      latitude: 2.4,
-      longitude: 2.4,
+      latitude: 3.54,
+      longitude: 4.65,
     };
+
     try {
-      const { insertedRow } = await create(obra);
-      Alert.alert('Criado', `Obra id:${insertedRow} criada`);
+     const { insertedRow } = await useObra.createObra(obra);
+      Alert.alert('Sucesso', `Obra  criada`);
     } catch (error) {
-      Alert.alert('Erro', error.message);
+      Alert.alert(error);
     }
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Cadastro de Endereço</Text>
-
-      {/* Date Picker */}
-      <Button
-        title={dataString ? `Data: ${dataString}` : 'Selecionar Data'}
-        onPress={showDatepicker}
-      />
-      {showPicker && (
-        <DateTimePicker
-          value={data}
-          mode="date"
-          is24Hour={true}
-          display="default"
-          onChange={onChangeDate}
+      <View>
+        <Text>Nome da Obra</Text>
+        <Input
+          placeholder={'Nome da obra'}
+          value={nome}
+          onChangeText={setNome}
         />
-      )}
-      <Text>Data selecionada: {dataString}</Text>
+      </View>
+      <View>
+        <Text>Data selecionada: {dataString}</Text>
+        <Button
+          title={dataString ? `Data: ${dataString}` : 'Selecionar Data'}
+          onPress={showDatepicker}
+        />
+        {showPicker && (
+          <DateTimePicker
+            value={data}
+            mode="date"
+            is24Hour={true}
+            display="default"
+            onChange={onChangeDate}
+          />
+        )}
+      </View>
+      <View style={styles.cep}>
+        <Input
+          placeholder="Digite o CEP"
+          value={cep}
+          onChangeText={setCep}
+          keyboardType="numeric"
+        />
 
-      {/* CEP Input */}
-      <TextInput
-        placeholder="Digite o CEP"
-        onChangeText={setCep}
-        value={cep}
-        keyboardType="numeric"
-        style={styles.input}
-      />
-      <Button title="Buscar Endereço" onPress={handleCep} />
-
-      {/* Address Details */}
-      {fullAdress && (
-        <View>
-          <Text>Rua: {fullAdress.logradouro}</Text>
-          <Text>Cidade: {fullAdress.localidade}</Text>
-          <Text>Estado: {fullAdress.uf}</Text>
-        </View>
-      )}
-
-      {/* Submit Button */}
+        {fullAdress && (
+          <View style={{ display: 'flex', gap: 5 }}>
+            <Input placeholder="Rua" value={fullAdress.logradouro} />
+            <Input placeholder="Bairro" value={fullAdress.bairro} />
+            <View
+              style={{
+                gap: 5,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <Input
+                placeholder="Número"
+                value={numero}
+                onChangeText={setNumero}
+                keyboardType="numeric"
+              />
+              <Input
+                placeholder="Complemento"
+                value={complemento}
+                onChangeText={setComplemento}
+              />
+            </View>
+          </View>
+        )}
+        <Button title="Buscar Endereço" onPress={handleCep} />
+      </View>
       <Button
         title="Cadastrar Endereço"
-        onPress={cadastrar}
-        disabled={handleDisable()}
+        onPress={create}
+        style={styles.btn}
+        disabled={handleDisableBtn()}
       />
     </SafeAreaView>
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -126,18 +165,13 @@ const styles = StyleSheet.create({
     gap: 5,
     backgroundColor: '#fff',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  cep: {
+    flex: 1,
+    gap: 15,
   },
-  input: {
-    padding: 3,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    borderWidth: 2,
-    paddingLeft: 12,
-    marginBottom: 10,
+  btn: {
+    flex: 1,
+    alignSelf: 'flex-end',
   },
 });
 

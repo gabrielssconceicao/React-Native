@@ -2,24 +2,28 @@ import { useSQLiteContext } from 'expo-sqlite';
 export function useObraDatabase() {
   const database = useSQLiteContext();
 
-  async function create(obra) {
-    const statement = await database.prepareAsync(
-      'INSERT INTO Obra (nome,data, rua, cidade, bairro, latitude, longitude) VALUES ($nome,$data $rua, $cidade, $bairro, $latitude, $longitude)'
-    );
-
+  async function createObra(obra) {
+    
+      const statement = await database.prepareAsync(
+        'INSERT INTO Obra (nome, data, cep, numero, complemento, rua, bairro, cidade, latitude, longitude) VALUES ($nome, $data, $cep, $numero, $complemento, $rua, $bairro, $cidade, $latitude, $longitude)'
+      );
     try {
       const result = await statement.executeAsync({
         $nome: obra.nome,
         $data: obra.data,
+        $cep: obra.cep,
+        $numero: obra.numero,
+        $complemento: obra.complemento,
         $rua: obra.rua,
-        $cidade: obra.cidade,
         $bairro: obra.bairro,
+        $cidade: obra.cidade,
         $latitude: obra.latitude,
         $longitude: obra.longitude,
       });
 
       const insertedRow = result.lastInsertRowId.toLocaleString();
-      return {insertedRow}
+      console.log(insertedRow);
+      return { insertedRow };
     } catch (error) {
       console.error('Error inserting obra:', error);
       throw error;
@@ -29,14 +33,14 @@ export function useObraDatabase() {
   }
 
   async function list() {
-    const query = "SELECT * FROM Obra"
+    const query = 'SELECT * FROM Obra';
     try {
-      const result = await database.getAllAsync(query)
-      return {result}
+      const result = await database.getAllAsync(query);
+      return { result };
     } catch (error) {
-      throw error
-    } 
+      throw error;
+    }
   }
 
-  return { create, list };
+  return { createObra, list };
 }
