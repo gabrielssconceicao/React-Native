@@ -1,28 +1,21 @@
-import { useState,useEffect } from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  FlatList,
- 
-} from 'react-native';
+import { useState, useEffect } from 'react';
+import { Text, View, StyleSheet, FlatList } from 'react-native';
 
-import { useObraDatabase } from '../database/useObraDatabase';
-import {Obra} from '../components/Obra' 
+import { useObra } from '../database/useObra';
+import { Obra } from '../components/Obra';
 export default function Obras() {
   const [obras, setObras] = useState([]);
 
-  const {list} = useObraDatabase();
-  useEffect(()=>{
-    const getObras = async()=>{
-      const {result} =await list();
-      setObras(result);
-      console.log(result)
-    }
+  const { list } = useObra();
 
+  useEffect(() => {
+    const getObras = async () => {
+      const { result } = await list();
+      setObras(result);
+    };
     getObras();
-  },[]);
-  
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.containerTarefas}>

@@ -11,7 +11,7 @@ const data = [
   { id: '5', icon: 'description', title: 'Documentação' },
   { id: '6', icon: 'timer', title: 'Cronômetro', isNew: true },
   { id: '7', icon: 'list', title: 'Obras', isNew: true },
-  { id: '8', icon: 'add', title: 'CadastroEndereco', isNew: true },
+  { id: '8', icon: 'add', title: 'CadastrarObra', isNew: true },
 ];
 
 const Home = () => {

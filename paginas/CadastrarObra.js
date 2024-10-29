@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Input } from '../components/Input';
-import { useObraDatabase } from '../database/useObraDatabase';
+import { useObra } from '../database/useObra';
 import axios from 'axios';
 // Função para buscar coordenadas via Nominatim
 const fetchCoordinates = async (address) => {
@@ -30,7 +30,7 @@ const fetchCoordinates = async (address) => {
   }
 };
 
-const CadastroEndereco = () => {
+const CadastrarObra = () => {
   const [data, setData] = useState(new Date());
   const [dataString, setDataString] = useState('');
   const [showPicker, setShowPicker] = useState(false);
@@ -39,7 +39,7 @@ const CadastroEndereco = () => {
   const [numero, setNumero] = useState('');
   const [complemento, setComplemento] = useState('');
   const [nome, setNome] = useState('');
-  const useObra = useObraDatabase();
+  const {createObra} = useObra();
   const showDatepicker = () => {
     setShowPicker(true);
   };
@@ -80,7 +80,7 @@ const CadastroEndereco = () => {
     };
 
     try {
-     const { insertedRow } = await useObra.createObra(obra);
+     const { insertedRow } = await createObra(obra);
       Alert.alert('Sucesso', `Obra  criada`);
     } catch (error) {
       Alert.alert(error);
@@ -175,4 +175,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CadastroEndereco;
+export default CadastrarObra;

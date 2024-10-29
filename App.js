@@ -7,7 +7,8 @@ import CalendarScreen from './paginas/CalendarScreen';
 import MapScreen from './paginas/MapScreen';
 import ClockScreen from './paginas/ClockScreen';
 import Obras from './paginas/Obras';
-import CadastroEndereco from './paginas/CadastroEndereco';
+import CadastrarObra from './paginas/CadastrarObra';
+import CadastrarFuncionario from './paginas/CadastrarFuncionario';
 import DatabaseProvider from './database/DatabaseProvider'
 
 const Stack = createStackNavigator();
@@ -49,9 +50,9 @@ const App = () => {
             options={{ headerShown: true, title: 'Obras' }}
           />
           <Stack.Screen
-            name="CadastroEndereco"
-            component={CadastroEndereco}
-            options={{ headerShown: true, title: 'CadastroEndereco' }}
+            name="CadastrarObra"
+            component={CadastrarFuncionario}
+            options={{ headerShown: true, title: 'CadastrarObra' }}
           />
         </Stack.Navigator>
       </NavigationContainer>

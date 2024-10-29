@@ -1,11 +1,11 @@
 import React, { useState, useCallback,useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Agenda } from 'react-native-calendars';
-import {useObraDatabase} from '../database/useObraDatabase'
+import {useObra} from '../database/useObra'
 import {CalendarItem} from '../components/CalendarItem'
 const CalendarScreen = () => {
   const [enderecos, setEnderecos] = useState({});
-  const {list} =useObraDatabase();
+  const {list} =useObra();
   
   useEffect(() => {
     const load = async () =>{

@@ -1,5 +1,5 @@
 import { useSQLiteContext } from 'expo-sqlite';
-export function useObraDatabase() {
+export function useObra() {
   const database = useSQLiteContext();
 
   async function createObra(obra) {
@@ -22,10 +22,8 @@ export function useObraDatabase() {
       });
 
       const insertedRow = result.lastInsertRowId.toLocaleString();
-      console.log(insertedRow);
       return { insertedRow };
     } catch (error) {
-      console.error('Error inserting obra:', error);
       throw error;
     } finally {
       await statement.finalizeAsync();

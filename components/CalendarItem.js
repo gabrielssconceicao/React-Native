@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     shadowColor: '#000', // Sombras sutis para destacar o card
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 2,
   },
