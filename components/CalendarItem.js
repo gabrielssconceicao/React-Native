@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 export function CalendarItem({ item }) {
+  console.log(item)
   return (
     <View style={styles.item}>
       <Text style={styles.itemTitle}>{item.nome}</Text>
@@ -10,6 +11,7 @@ export function CalendarItem({ item }) {
       )}
       <Text style={styles.itemText}>Bairro: {item.bairro}</Text>
       <Text style={styles.itemText}>Cidade: {item.cidade}</Text>
+      <Text style={styles.itemText}>{item.descricao}</Text>
     </View>
   );
 }

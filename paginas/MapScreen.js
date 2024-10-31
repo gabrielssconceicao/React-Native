@@ -1,22 +1,22 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback,useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFocusEffect } from '@react-navigation/native';
-// import { useEndereco } from '../hooks/useEnderecos';
+import {useObra} from '../database/useObra'
 
 const MapScreen = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [markers, setMarkers] = useState([]);
-  const { enderecos, loadEnderecos } = useEndereco(); // Usando o hook customizado para gerenciar endereços
+  const {list} = useObra()
 
-  // Função para carregar endereços do AsyncStorage
+  
   const loadAddressesWithCoordinates = useCallback(async () => {
     try {
-      await loadEnderecos(); // Carrega os endereços do AsyncStorage
-
-      const validMarkers = enderecos
+      const {result} = await list()
+      console.log(result)
+      const validMarkers = result
         .filter((address) => address.latitude && address.longitude) // Filtra endereços com coordenadas válidas
         .map((address) => ({
           latitude: address.latitude,
@@ -28,7 +28,7 @@ const MapScreen = () => {
     } catch (error) {
       console.error('Erro ao carregar endereços do AsyncStorage', error);
     }
-  }, [enderecos, loadEnderecos]);
+  }, []);
 
   const requestLocationAndLoadAddresses = useCallback(async () => {
     try {

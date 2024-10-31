@@ -5,6 +5,7 @@ export async function createTables(database: SQLiteDatabase) {
     CREATE TABLE IF NOT EXISTS Obra (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           nome TEXT ,
+          descricao TEXT ,
           data TEXT ,
           cep TEXT ,
           numero INTEGER ,

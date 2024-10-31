@@ -11,25 +11,21 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Input } from '../components/Input';
 import { useObra } from '../database/useObra';
+import {fetchCoordinates} from '../utils/fetchCoord'
 import axios from 'axios';
 // Função para buscar coordenadas via Nominatim
-const fetchCoordinates = async (address) => {
-  const encodedAddress = encodeURIComponent(address);
-  const response = await axios.get(
-    `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&addressdetails=1`
-  );
-  if (response.data.length > 0) {
-    console.log(response.data);
-    const location = response.data[0];
-    return {
-      latitude: parseFloat(location.lat),
-      longitude: parseFloat(location.lon),
-    };
-  } else {
-    console.error('Endereço não encontrado');
-    return null;
-  }
-};
+// const fetchCoordinates = async (address) => {
+//   const encodedAddress = encodeURIComponent(`${address.logradouro} ${address.numero}, ${address.cidade}, ${address.uf}, Brasil`);
+  
+//   try {
+//     const response = await axios.get(
+//     `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&addressdetails=1`
+//   );
+//     console.log(response)
+//   } catch (e) {
+//     console.log(e)
+//   }
+// };
 
 const CadastroObras = () => {
   const [data, setData] = useState(new Date());
@@ -40,6 +36,7 @@ const CadastroObras = () => {
   const [numero, setNumero] = useState('');
   const [complemento, setComplemento] = useState('');
   const [nome, setNome] = useState('');
+  const [descricao, setDescricao] = useState('');
   const { createObra } = useObra();
   const showDatepicker = () => {
     setShowPicker(true);
@@ -55,20 +52,25 @@ const CadastroObras = () => {
   const handleCep = async () => {
     try {
       const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-      console.log(response);
-      setFullAdress(response.data);
+      const adress = response.data;
+      const {lat,lon} = await fetchCoordinates(adress);
+      console.log(lat,lon)
+      const latitude = 0
+      const longitude = 0
+      setFullAdress({...adress, latitude,longitude});
     } catch (error) {
       Alert.alert('Error', error.message);
     }
   };
 
   const handleDisableBtn = () => {
-    return !(cep && dataString && fullAdress && numero && nome);
+    return !(cep && dataString && fullAdress && numero && nome && descricao);
   };
 
   const handleAddEndereco = async () => {
     const obra = {
       nome,
+      descricao,
       data: dataString,
       cep,
       numero,
@@ -76,9 +78,10 @@ const CadastroObras = () => {
       cidade: fullAdress.localidade,
       rua: fullAdress.logradouro,
       bairro: fullAdress.bairro,
-      latitude: 3.54,
-      longitude: 4.65,
+      latitude: fullAdress.latitude,
+      longitude: fullAdress.longitude,
     };
+    console.log(obra);
     try {
       const { insertedRow } = await createObra(obra);
       Alert.alert('Sucesso', `Obra  criada`);
@@ -95,6 +98,11 @@ const CadastroObras = () => {
           placeholder={'Nome da obra'}
           value={nome}
           onChangeText={setNome}
+        />
+        <Input
+          placeholder={'Descrição da Obra'}
+          value={descricao}
+          onChangeText={setDescricao}
         />
       </View>
       <View>

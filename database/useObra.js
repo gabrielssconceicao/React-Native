@@ -5,11 +5,12 @@ export function useObra() {
   async function createObra(obra) {
     
       const statement = await database.prepareAsync(
-        'INSERT INTO Obra (nome, data, cep, numero, complemento, rua, bairro, cidade, latitude, longitude) VALUES ($nome, $data, $cep, $numero, $complemento, $rua, $bairro, $cidade, $latitude, $longitude)'
+        'INSERT INTO Obra (nome,descricao, data, cep, numero, complemento, rua, bairro, cidade, latitude, longitude) VALUES ($nome, $descricao, $data, $cep, $numero, $complemento, $rua, $bairro, $cidade, $latitude, $longitude)'
       );
     try {
       const result = await statement.executeAsync({
         $nome: obra.nome,
+        $descricao: obra.descricao,
         $data: obra.data,
         $cep: obra.cep,
         $numero: obra.numero,

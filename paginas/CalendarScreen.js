@@ -11,12 +11,11 @@ const CalendarScreen = () => {
     const load = async () =>{
       const {result} = await list()
       const groupedEnderecos = result.reduce((acc,curr)=>{
-        const {nome, data, rua,numero,complemento,bairro,cidade} = curr;
+        const {data} = curr;
         if(!acc[data]) {
           acc[data]=[];
         }
-
-        acc[data].push({nome, rua,numero,complemento,bairro,cidade})
+        acc[data].push(curr)
         return acc;
       },{})
       setEnderecos(groupedEnderecos)
