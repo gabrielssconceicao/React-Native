@@ -1,12 +1,17 @@
-import {View,Text,StyleSheet} from 'react-native'
-export function CalendarItem({item}) {
-  return <View style={styles.item}>
-  <Text style={styles.itemTitle}>{item.nome}</Text>
-  <Text style={styles.itemText}>Rua: {item.rua}</Text>
-  {item.complemento && <Text style={styles.itemText}>Complemento: {item.complemento}</Text>}
-  <Text style={styles.itemText}>Bairro: {item.bairro}</Text>
-  <Text style={styles.itemText}>Cidade: {item.cidade}</Text>
-</View>
+import { View, Text, StyleSheet } from 'react-native';
+export function CalendarItem({ item }) {
+  return (
+    <View style={styles.item}>
+      <Text style={styles.itemTitle}>{item.nome}</Text>
+      <Text style={styles.itemText}>Rua: {item.rua}</Text>
+      <Text style={styles.itemText}>Número: {item.numero}</Text>
+      {item.complemento && (
+        <Text style={styles.itemText}>Complemento: {item.complemento}</Text>
+      )}
+      <Text style={styles.itemText}>Bairro: {item.bairro}</Text>
+      <Text style={styles.itemText}>Cidade: {item.cidade}</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -33,5 +38,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555', // Cor suave para detalhes
     marginBottom: 2,
-  },
+  }
 });

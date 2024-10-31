@@ -36,5 +36,5 @@ export async function createTables(database: SQLiteDatabase) {
   `);
   } catch (error) {
     throw error
-  } 
+  }
 }

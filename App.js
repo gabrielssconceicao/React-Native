@@ -6,17 +6,17 @@ import Home from './paginas/Home';
 import CalendarScreen from './paginas/CalendarScreen';
 import MapScreen from './paginas/MapScreen';
 import ClockScreen from './paginas/ClockScreen';
-import Obras from './paginas/Obras';
-import CadastrarObra from './paginas/CadastrarObra';
-import CadastrarFuncionario from './paginas/CadastrarFuncionario';
-import DatabaseProvider from './database/DatabaseProvider'
+import CadastroObras from './paginas/CadastroObras.js';
+import Works from './paginas/Works.js';
+import Workers from './paginas/Workers.js';
+import Doc from './paginas/Doc.js';
+import DatabaseProvider from './database/DatabaseProvider';
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
-
-     <DatabaseProvider>
+    <DatabaseProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen
@@ -27,17 +27,27 @@ const App = () => {
           <Stack.Screen
             name="Home"
             component={Home}
-            options={{ headerShown: true }}
+            options={{ headerShown: true, title: 'P&G' }}
           />
           <Stack.Screen
-            name="Calendário"
+            name="Works"
+            component={Works}
+            options={{ headerShown: true, title: 'Obras' }}
+          />
+          <Stack.Screen
+            name="Workers"
+            component={Workers}
+            options={{ headerShown: true, title: 'Funcionários' }}
+          />
+          <Stack.Screen
+            name="Calendar"
             component={CalendarScreen}
-            options={{ headerShown: true, title: 'Calendário' }}
+            options={{ headerShown: true, title: 'Calendar' }}
           />
           <Stack.Screen
-            name="Mapa"
+            name="Map"
             component={MapScreen}
-            options={{ headerShown: true, title: 'Mapa' }}
+            options={{ headerShown: true, title: 'Map' }}
           />
           <Stack.Screen
             name="Clock"
@@ -45,14 +55,14 @@ const App = () => {
             options={{ headerShown: true, title: 'Clock' }}
           />
           <Stack.Screen
-            name="Obras"
-            component={Obras}
-            options={{ headerShown: true, title: 'Obras' }}
+            name="Doc"
+            component={Doc}
+            options={{ headerShown: false, title: 'Documentação' }}
           />
           <Stack.Screen
-            name="CadastrarObra"
-            component={CadastrarFuncionario}
-            options={{ headerShown: true, title: 'CadastrarObra' }}
+            name="CadastroObras"
+            component={CadastroObras}
+            options={{ headerShown: true, title: 'Cadastro de Obras' }}
           />
         </Stack.Navigator>
       </NavigationContainer>
