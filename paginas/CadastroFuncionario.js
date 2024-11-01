@@ -7,7 +7,6 @@ import {
   SafeAreaView,
   View,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { Input } from '../components/Input';
 import { useFuncionario } from '../database/useFuncionario';
 

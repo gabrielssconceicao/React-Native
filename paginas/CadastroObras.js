@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,60 +11,56 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Input } from '../components/Input';
 import { useObra } from '../database/useObra';
+import { fetchCoordinates } from '../utils/fetchCoord';
 import axios from 'axios';
-import {fetchCoordinates} from '../utils/fetchCoord'
-//Função para buscar coordenadas via Nominatim
-// const fetchCoordinates = async (address) => {
-//   console.log(address);
-//   const encodedAddress = encodeURI(
-//     `${address.logradouro},${address.localidade}, ${address.uf}`
-//   );
-//   const url = `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json`;
-//   try {
-//     const response = await fetch(url);
-//     console.log(response);
-//   } catch (e) {
-//     console.log(e);
-//   }
-// };
 
 const CadastroObras = () => {
   const [data, setData] = useState(new Date());
   const [dataString, setDataString] = useState('');
   const [showPicker, setShowPicker] = useState(false);
-  const [cep, setCep] = useState('');
+  const [cep, setCep] = useState('21635290');
   const [fullAdress, setFullAdress] = useState({});
   const [numero, setNumero] = useState('');
   const [complemento, setComplemento] = useState('');
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
   const { createObra } = useObra();
-  const showDatepicker = () => {
-    setShowPicker(true);
+
+  const toggleDatepicker = () => {
+    setShowPicker((prev) => !prev);
   };
 
   const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || data;
-    setShowPicker(false);
-    setData(currentDate);
-    setDataString(currentDate.toISOString().split('T')[0]); // Formato YYYY-MM-DD
+    if (event.type === 'set') {
+      const currentDate = selectedDate || data;
+      setData(currentDate);
+      setDataString(currentDate.toISOString().split('T')[0]); // Formato YYYY-MM-DD
+    }
+    // Não fecha o DateTimePicker aqui
   };
 
   const handleCep = async () => {
     try {
       const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
       const adress = response.data;
-      await fetchCoordinates(adress);
-      const latitude = 0;
-      const longitude = 0;
-      setFullAdress({ ...adress });
+      const { latitude, longitude } = await fetchCoordinates(adress);
+      console.log(latitude, longitude);
+      setFullAdress({ ...adress, latitude, longitude });
     } catch (error) {
       Alert.alert('Error', error.message);
     }
+
   };
 
   const handleDisableBtn = () => {
-    return !(cep && dataString && fullAdress && numero && nome && descricao);
+    return !(
+      cep &&
+      dataString &&
+      fullAdress &&
+      numero &&
+      nome &&
+      descricao
+    );
   };
 
   const handleAddEndereco = async () => {
@@ -78,15 +74,14 @@ const CadastroObras = () => {
       cidade: fullAdress.localidade,
       rua: fullAdress.logradouro,
       bairro: fullAdress.bairro,
-      latitude: 5.4,
-      longitude: 6.6,
+      latitude: fullAdress.latitude,
+      longitude: fullAdress.longitude,
     };
-    console.log(obra);
     try {
-      const { insertedRow } = await createObra(obra);
-      Alert.alert('Sucesso', `Obra  criada`);
+      await createObra(obra);
+      Alert.alert('Sucesso', 'Obra criada');
     } catch (error) {
-      Alert.alert(error);
+      Alert.alert('Error', error.message);
     }
   };
 
@@ -98,16 +93,18 @@ const CadastroObras = () => {
           placeholder={'Nome da obra'}
           value={nome}
           onChangeText={setNome}
+          placeholderTextColor="#000"
         />
         <Input
           placeholder={'Descrição da Obra'}
           value={descricao}
           onChangeText={setDescricao}
+          placeholderTextColor="#000"
         />
       </View>
       <View>
         <Text style={styles.dateText}>Data selecionada: {dataString}</Text>
-        <TouchableOpacity style={styles.dateButton} onPress={showDatepicker}>
+        <TouchableOpacity style={styles.dateButton} onPress={toggleDatepicker}>
           <Text style={styles.dateButtonText}>
             {dataString ? `Data: ${dataString}` : 'Selecionar Data'}
           </Text>
@@ -117,8 +114,9 @@ const CadastroObras = () => {
             value={data}
             mode="date"
             is24Hour={true}
-            display="default"
+            display="spinner"
             onChange={onChangeDate}
+            style={styles.dateTimePicker}
           />
         )}
       </View>
@@ -127,48 +125,53 @@ const CadastroObras = () => {
           placeholder="Digite o CEP"
           value={cep}
           onChangeText={setCep}
+          returnKeyType="done"
           keyboardType="numeric"
+          placeholderTextColor="#000"
         />
-
+        <Button title="Buscar Endereço" onPress={handleCep} />
         <View style={{ display: 'flex', gap: 5 }}>
           <Input
             placeholder="Rua"
-            value={fullAdress.logradouro}
+            value={fullAdress.logradouro || ''}
             onChangeText={(text) => {
               const prev = { ...fullAdress };
               prev.logradouro = text;
               setFullAdress(prev);
             }}
+            placeholderTextColor="#000"
           />
           <Input
             placeholder="Bairro"
-            value={fullAdress.bairro}
+            value={fullAdress.bairro || ''}
             onChangeText={(text) => {
               const prev = { ...fullAdress };
               prev.bairro = text;
               setFullAdress(prev);
             }}
+            placeholderTextColor="#000"
           />
           <Input
             placeholder="Número"
             value={numero}
             onChangeText={setNumero}
+            returnKeyType="done"
             keyboardType="numeric"
+            placeholderTextColor="#000"
           />
           <Input
             placeholder="Complemento"
             value={complemento}
             onChangeText={setComplemento}
+            returnKeyType="done"
+            placeholderTextColor="#000"
           />
         </View>
-
-        <Button title="Buscar Endereço" onPress={handleCep} />
       </View>
-
       <TouchableOpacity
         style={[
           styles.submitButton,
-          handleDisableBtn() && styles.submitButtonDisabled, // Apply disabled style if button is disabled
+          handleDisableBtn() && styles.submitButtonDisabled,
         ]}
         onPress={handleAddEndereco}
         disabled={handleDisableBtn()}>
@@ -183,7 +186,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#f5f5f5',
-    gap: 5,
   },
   title: {
     fontSize: 24,
@@ -202,6 +204,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
     alignItems: 'center',
+    alignSelf: 'center',
   },
   dateButtonText: {
     color: '#fff',
@@ -210,7 +213,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 16,
     marginBottom: 10,
-    color: '#555',
+    color: '#333',
   },
   submitButton: {
     backgroundColor: '#28a745',
@@ -223,36 +226,11 @@ const styles = StyleSheet.create({
   },
   submitButtonDisabled: {
     backgroundColor: '#1e7e34',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
   },
-  submitButtonText: {
+  dateTimePicker: {
+    backgroundColor: '#000',
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
-const styles2 = StyleSheet.create({
-  input: {
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    backgroundColor: '#fff',
-  },
-  addressContainer: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: '#e9ecef',
-    borderRadius: 8,
-  },
-  addressText: {
-    fontSize: 16,
-    color: '#333',
-  },
-});
+
 export default CadastroObras;

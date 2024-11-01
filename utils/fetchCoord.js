@@ -6,22 +6,24 @@ export const fetchCoordinates = async (address) => {
       /%20/g,
       '+'
     );
-
-  //Rua+Harmonia,+Vila+Madalena,+São+Paulo,+SP,+Brasil
   try {
-    fetch(
+    const encodedAddress = encodeURIComponent(address);
+    const response = await axios.get(
       `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&addressdetails=1`
-    )
-      .then((result) => result.json())
-      .then((data) => console.log(data));
-    // if(response.data.length > 0) {
-    //   const {lat,lon} = response.data[0];
-    //   console.log(response.data[0])
-    //   return {lat,lon};
-    // } else {
-    //   return {lat:0,lon:0};
-    // }
-  } catch (e) {
-    console.log(e);
+    );
+    
+    if (response.data.length > 0) {
+      const location = response.data[0];
+      return {
+        latitude: parseFloat(location.lat),
+        longitude: parseFloat(location.lon),
+      };
+    } else {
+      console.error('Endereço não encontrado');
+      return null;
+    }
+  } catch (error) {
+    console.error('Erro ao buscar coordenadas:', error);
+    return null;
   }
 };
