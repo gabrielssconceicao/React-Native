@@ -11,7 +11,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Input } from '../components/Input';
 import { useFuncionario } from '../database/useFuncionario';
 
-const CadastarFuncionario = () => {
+const CadastroFuncionario = () => {
   const [nome, setNome] = useState('');
   const [salarioMensal, setSalarioMensal] = useState(0);
   const [salarioSemanal, setSalarioSemanal] = useState(0);
@@ -93,4 +93,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CadastarFuncionario;
+export default CadastroFuncionario;

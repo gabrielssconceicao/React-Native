@@ -11,19 +11,20 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Input } from '../components/Input';
 import { useObra } from '../database/useObra';
-import {fetchCoordinates} from '../utils/fetchCoord'
 import axios from 'axios';
-// Função para buscar coordenadas via Nominatim
+import {fetchCoordinates} from '../utils/fetchCoord'
+//Função para buscar coordenadas via Nominatim
 // const fetchCoordinates = async (address) => {
-//   const encodedAddress = encodeURIComponent(`${address.logradouro} ${address.numero}, ${address.cidade}, ${address.uf}, Brasil`);
-  
-//   try {
-//     const response = await axios.get(
-//     `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&addressdetails=1`
+//   console.log(address);
+//   const encodedAddress = encodeURI(
+//     `${address.logradouro},${address.localidade}, ${address.uf}`
 //   );
-//     console.log(response)
+//   const url = `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json`;
+//   try {
+//     const response = await fetch(url);
+//     console.log(response);
 //   } catch (e) {
-//     console.log(e)
+//     console.log(e);
 //   }
 // };
 
@@ -53,11 +54,10 @@ const CadastroObras = () => {
     try {
       const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
       const adress = response.data;
-      const {lat,lon} = await fetchCoordinates(adress);
-      console.log(lat,lon)
-      const latitude = 0
-      const longitude = 0
-      setFullAdress({...adress, latitude,longitude});
+      await fetchCoordinates(adress);
+      const latitude = 0;
+      const longitude = 0;
+      setFullAdress({ ...adress });
     } catch (error) {
       Alert.alert('Error', error.message);
     }
@@ -78,8 +78,8 @@ const CadastroObras = () => {
       cidade: fullAdress.localidade,
       rua: fullAdress.logradouro,
       bairro: fullAdress.bairro,
-      latitude: fullAdress.latitude,
-      longitude: fullAdress.longitude,
+      latitude: 5.4,
+      longitude: 6.6,
     };
     console.log(obra);
     try {
@@ -219,20 +219,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     alignSelf: 'flex-end',
-    width: '100%'
+    width: '100%',
   },
   submitButtonDisabled: {
     backgroundColor: '#1e7e34',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20
+    marginTop: 20,
   },
   submitButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  }
+  },
 });
 const styles2 = StyleSheet.create({
   input: {

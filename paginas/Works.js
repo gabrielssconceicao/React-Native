@@ -5,12 +5,10 @@ import {
   StyleSheet,
   FlatList,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import {useObra} from '../database/useObra'
 import {Obra} from '../components/Obra'
 export default function Tarefas() {
   const [obras,setObras]= useState([])
-  const navigation = useNavigation();
   const { list } = useObra();
 
   useEffect(()=>{

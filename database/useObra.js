@@ -3,10 +3,9 @@ export function useObra() {
   const database = useSQLiteContext();
 
   async function createObra(obra) {
-    
-      const statement = await database.prepareAsync(
-        'INSERT INTO Obra (nome,descricao, data, cep, numero, complemento, rua, bairro, cidade, latitude, longitude) VALUES ($nome, $descricao, $data, $cep, $numero, $complemento, $rua, $bairro, $cidade, $latitude, $longitude)'
-      );
+    const statement = await database.prepareAsync(
+      'INSERT INTO Obra (nome,descricao, data, cep, numero, complemento, rua, bairro, cidade, latitude, longitude) VALUES ($nome, $descricao, $data, $cep, $numero, $complemento, $rua, $bairro, $cidade, $latitude, $longitude)'
+    );
     try {
       const result = await statement.executeAsync({
         $nome: obra.nome,
@@ -40,6 +39,22 @@ export function useObra() {
       throw error;
     }
   }
+  async function getOne(id) {
+    const statement = await database.prepareAsync(
+      'SELECT * FROM Obra WHERE id = $id'
+    );
+    try {
+      const result = await statement.executeAsync({
+        $id: id,
+      });
+      const obra = await result.getFirstAsync();
+      return { result: obra };
+    } catch (error) {
+      throw error;
+    } finally {
+      await statement.finalizeAsync();
+    }
+  }
 
-  return { createObra, list };
+  return { createObra, list, getOne };
 }
