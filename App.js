@@ -7,7 +7,6 @@ import CalendarScreen from './paginas/CalendarScreen';
 import MapScreen from './paginas/MapScreen';
 import ClockScreen from './paginas/ClockScreen';
 import CadastroObras from './paginas/CadastroObras.js';
-import CadastroFuncionario from './paginas/CadastroFuncionario.js';
 import Works from './paginas/Works.js';
 import Workers from './paginas/Workers.js';
 import Doc from './paginas/Doc.js';
@@ -65,11 +64,7 @@ const App = () => {
             component={CadastroObras}
             options={{ headerShown: true, title: 'Cadastro de Obras' }}
           />
-          <Stack.Screen
-            name="CadastroFuncionario"
-            component={CadastroFuncionario}
-            options={{ headerShown: true, title: 'Cadastro de Funcionarios' }}
-          />
+          
           
         </Stack.Navigator>
       </NavigationContainer>

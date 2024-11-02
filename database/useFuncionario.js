@@ -1,24 +1,24 @@
 import { useSQLiteContext } from 'expo-sqlite';
+import {useObraFuncionario} from './useObraFuncionario'
 export function useFuncionario() {
   const database = useSQLiteContext();
-
-  async function createFuncionario(funcionario) {
+  const {relateFuncionarioObra} = useObraFuncionario()
+  async function createFuncionario(funcionario, obraId) {
     
       const statement = await database.prepareAsync(
-        'INSERT INTO Funcionarios (nome, salario_semanal, salario_mensal, profissao) VALUES ($nome, $salario_semanal, $salario_mensal, $profissao)'
+        'INSERT INTO Funcionarios (nome, salario, profissao) VALUES ($nome, $salario, $profissao)'
       );
     try {
-      await statement.executeAsync({
+      const result = await statement.executeAsync({
         $nome: funcionario.nome,
-        $salario_semanal: funcionario.salarioSemanal,
-        $salario_mensal: funcionario.salarioMensal,
+        $salario: funcionario.salario,
         $profissao: funcionario.profissao
       });
 
-      // const insertedRow = result.lastInsertRowId.toLocaleString();
-      // return { insertedRow };
+      const insertedRow = result.lastInsertRowId;
+      await relateFuncionarioObra(insertedRow,obraId)
+       return;
       
-      return;
     } catch (error) {
       throw error;
     } finally {

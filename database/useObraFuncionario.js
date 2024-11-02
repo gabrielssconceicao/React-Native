@@ -2,70 +2,61 @@ import { useSQLiteContext } from 'expo-sqlite';
 export function useObraFuncionario() {
   const database = useSQLiteContext();
 
-  /*
-  
-  async function relateFuncionarioObra(obraFuncionarioId) {
-    const checkStatement = await database.prepareAsync(`
-      SELECT COUNT(*) AS count 
-      FROM Funcionario_Obra 
-      WHERE funcionario_id = $funcionario_id AND obra_id = $obra_id
-    `);
+  async function relateFuncionarioObra(funcionarioId, obraId) {
+    const checkStatement = await database.prepareAsync(
+      'SELECT *  FROM Funcionario_Obra  WHERE funcionario_id = $funcionarioId AND obra_id = $obraId'
+    );
 
     try {
       // Verifica se a relação já existe
       const checkResult = await checkStatement.executeAsync({
-        $funcionario_id: obraFuncionarioId.funcionarioId,
-        $obra_id: obraFuncionarioId.obraId,
+        $funcionarioId: funcionarioId,
+        $obraId: obraId,
       });
-      
-      const exists = checkResult[0].count > 0;
+      const exists = await checkResult.getAllAsync();
 
-      if (exists) {
-        console.log('Relação já existe entre o funcionário e a obra.');
-        return { message: 'Relação já existe.' };
+      if (exists.length !== 0) {
+       
+        return { result: 'Relação já existe.' };
       }
 
-      // Se não existir, insere a nova relação
+      //Se não existir, insere a nova relação
       const insertStatement = await database.prepareAsync(
-        'INSERT INTO Funcionario_Obra (funcionario_id, obra_id) VALUES ($funcionario_id, $obra_id)'
+        'INSERT INTO Funcionario_Obra (funcionario_id, obra_id) VALUES ($funcionarioIdd, $obraIdd)'
       );
-      
-      const insertResult = await insertStatement.executeAsync({
-        $funcionario_id: obraFuncionarioId.funcionarioId,
-        $obra_id: obraFuncionarioId.obraId,
-      });
-      
-      console.log(insertResult);
-      const insertedRow = insertResult.lastInsertRowId.toLocaleString();
-      return { insertedRow };
 
+      await insertStatement.executeAsync({
+        $funcionarioIdd: funcionarioId,
+        $obraIdd: obraId,
+      });
+
+     
+      return;
     } catch (error) {
       throw error;
     } finally {
       await checkStatement.finalizeAsync();
     }
   }
-  
-  */
 
-  async function relateFuncionarioObra(obraFuncionarioId) {
-    const statement = await database.prepareAsync(
-      'INSERT INTO Funcionario_Obra (funcionario_id, obra_id) VALUES ($funcionario_id, $obra_id)'
-    );
-    try {
-      const result = await statement.executeAsync({
-        $funcionario_id: obraFuncionarioId.funcionarioId,
-        $obra_id: obraFuncionarioId.obraId,
-      });
-      console.log(result);
-      const insertedRow = result.lastInsertRowId.toLocaleString();
-      return { insertedRow };
-    } catch (error) {
-      throw error;
-    } finally {
-      await statement.finalizeAsync();
-    }
-  }
+  // async function relateFuncionarioObra(obraFuncionarioId) {
+  //   const statement = await database.prepareAsync(
+  //     'INSERT INTO Funcionario_Obra (funcionario_id, obra_id) VALUES ($funcionario_id, $obra_id)'
+  //   );
+  //   try {
+  //     const result = await statement.executeAsync({
+  //       $funcionario_id: obraFuncionarioId.funcionarioId,
+  //       $obra_id: obraFuncionarioId.obraId,
+  //     });
+  //     console.log(result);
+  //     const insertedRow = result.lastInsertRowId.toLocaleString();
+  //     return { insertedRow };
+  //   } catch (error) {
+  //     throw error;
+  //   } finally {
+  //     await statement.finalizeAsync();
+  //   }
+  // }
 
   async function getAll() {
     try {
