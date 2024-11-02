@@ -36,12 +36,16 @@ export function CadastarFuncionario({ close }) {
 
   useEffect(() => {
     const getAllObras = async () => {
-      const { result } = await useObras.list();
+      try {
+        const { result } = await useObras.list();
       const transformedData = result.map((item) => ({
         label: item.nome,
         value: item.id,
       }));
       setObras(transformedData);
+      } catch( error) {
+        Alert.alert(error)
+      }
     };
 
     getAllObras();

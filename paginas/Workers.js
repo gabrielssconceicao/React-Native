@@ -1,38 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Alert, FlatList } from 'react-native';
 import {CadastarFuncionario} from '../components/CadastrarFuncionario'
+import {MostarFuncionarios} from '../components/MostarFuncionarios'
+import {DemitirFuncionario} from '../components/DemitirFuncionario'
 const Workers = () => {
   const [modalVisibleCadastro, setModalVisibleCadastro] = useState(false);
   const [modalVisibleMostrar, setModalVisibleMostrar] = useState(false);
   const [modalVisibleDemissao, setModalVisibleDemissao] = useState(false);
   
-  const [modalVisibleConfirmacaoExclusao, setModalVisibleConfirmacaoExclusao] = useState(false);
-  
-  const [funcionarios, setFuncionarios] = useState([]);
-  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState(null);
-
-  const handleMostrar = (funcionario) => {
-    Alert.alert(
-      'Detalhes do Funcionário',
-      `Nome: ${funcionario.nome}\nProfissão: ${funcionario.profissao}\nSalário: ${funcionario.salario}\nObra: ${funcionario.obra}`
-    );
-  };
-
-  const handleDemissao = (funcionario) => {
-    setFuncionarioSelecionado(funcionario);
-    setModalVisibleConfirmacaoExclusao(true);
-  };
-
-  const confirmDelete = () => {
-    if (funcionarioSelecionado) {
-      setFuncionarios(funcionarios.filter(funcionario => funcionario.nome !== funcionarioSelecionado.nome));
-      Alert.alert('Funcionário excluído', `Funcionário: ${funcionarioSelecionado.nome} foi demitido.`);
-      setFuncionarioSelecionado(null);
-    }
-    setModalVisibleConfirmacaoExclusao(false);
-    setModalVisibleDemissao(false);
-  };
-
   return (
     <View style={styles.container}>
       <TouchableOpacity 
@@ -71,30 +46,7 @@ const Workers = () => {
         visible={modalVisibleMostrar}
         onRequestClose={() => setModalVisibleMostrar(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Funcionários Cadastrados</Text>
-            {funcionarios.length === 0 ? (
-              <Text>Nenhum funcionário cadastrado.</Text>
-            ) : (
-              <FlatList
-                data={funcionarios}
-                keyExtractor={(item) => item.nome}
-                renderItem={({ item }) => (
-                  <TouchableOpacity onPress={() => handleMostrar(item)}>
-                    <Text style={styles.funcionarioText}>{item.nome}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-            )}
-            <TouchableOpacity 
-              style={styles.closeButton} 
-              onPress={() => setModalVisibleMostrar(false)}
-            >
-              <Text style={styles.buttonText}>Fechar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <MostarFuncionarios close={() => setModalVisibleMostrar(false)} />
       </Modal>
 
       {/* Modal para Demissão */}
@@ -104,55 +56,10 @@ const Workers = () => {
         visible={modalVisibleDemissao}
         onRequestClose={() => setModalVisibleDemissao(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Selecionar Funcionário para Demissão</Text>
-            {funcionarios.length === 0 ? (
-              <Text>Nenhum funcionário cadastrado.</Text>
-            ) : (
-              <FlatList
-                data={funcionarios}
-                keyExtractor={(item) => item.nome}
-                renderItem={({ item }) => (
-                  <TouchableOpacity onPress={() => handleDemissao(item)}>
-                    <Text style={styles.funcionarioText}>{item.nome}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-            )}
-            <TouchableOpacity 
-              style={styles.closeButton} 
-              onPress={() => setModalVisibleDemissao(false)}
-            >
-              <Text style={styles.buttonText}>Fechar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <DemitirFuncionario close={() => setModalVisibleDemissao(false)} />
       </Modal>
 
-      {/* Modal de Confirmação de Exclusão */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisibleConfirmacaoExclusao}
-        onRequestClose={() => setModalVisibleConfirmacaoExclusao(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Confirmação de Demissão</Text>
-            <Text>Deseja excluir o funcionário {funcionarioSelecionado?.nome}?</Text>
-            <TouchableOpacity style={styles.confirmButton} onPress={confirmDelete}>
-              <Text style={styles.buttonText}>Excluir</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.closeButton} 
-              onPress={() => setModalVisibleConfirmacaoExclusao(false)}
-            >
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+     
     </View>
   );
 };
