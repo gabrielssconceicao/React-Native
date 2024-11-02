@@ -39,24 +39,6 @@ export function useObraFuncionario() {
     }
   }
 
-  // async function relateFuncionarioObra(obraFuncionarioId) {
-  //   const statement = await database.prepareAsync(
-  //     'INSERT INTO Funcionario_Obra (funcionario_id, obra_id) VALUES ($funcionario_id, $obra_id)'
-  //   );
-  //   try {
-  //     const result = await statement.executeAsync({
-  //       $funcionario_id: obraFuncionarioId.funcionarioId,
-  //       $obra_id: obraFuncionarioId.obraId,
-  //     });
-  //     console.log(result);
-  //     const insertedRow = result.lastInsertRowId.toLocaleString();
-  //     return { insertedRow };
-  //   } catch (error) {
-  //     throw error;
-  //   } finally {
-  //     await statement.finalizeAsync();
-  //   }
-  // }
 
   async function getAll() {
     try {
@@ -80,5 +62,33 @@ export function useObraFuncionario() {
     }
   }
 
-  return { relateFuncionarioObra, getAll };
+  async function getObrasPorFuncionario(funcionarioId) {
+    const statement = await database.prepareAsync('SELECT O.nome AS nome FROM Funcionario_Obra FO JOIN Obra O ON FO.obra_id = O.id WHERE FO.funcionario_id = $funcionarioId');
+
+    try {
+      const result = await statement.executeAsync({
+        $funcionarioId: funcionarioId
+      }) 
+      const allResults = await result.getAllAsync()
+      return {result: allResults}
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function getFuncionariosPorObra(obraId) {
+    const statement = await database.prepareAsync('SELECT  F.nome, F.profissao FROM Funcionario_Obra FO JOIN Funcionarios F ON FO.funcionario_id = F.id WHERE FO.obra_id = $obraId');
+
+    try {
+      const result = await statement.executeAsync({
+        $obraId: obraId
+      }) 
+      const allResults = await result.getAllAsync()
+      return {result: allResults}
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  return { relateFuncionarioObra, getAll,getObrasPorFuncionario,getFuncionariosPorObra };
 }

@@ -1,10 +1,18 @@
 import { View, Text, StyleSheet, Button } from 'react-native';
+import {useObraFuncionario} from '../database/useObraFuncionario'
 export function Obra({ obra }) {
+  const {getFuncionariosPorObra} = useObraFuncionario()
+
+  const details = async ()=>{
+    const {result} = await getFuncionariosPorObra(obra.id)
+    console.log(result);
+  }
+
   return (
     <View key={obra.id} style={styles.card}>
       <Text style={styles.cardName}>{obra.nome}</Text>
       <Text style={styles.cardDate}>{obra.data}</Text>
-      <Button title="Apagar" color="#e74c3c" />
+      <Button title="Apagar" color="#e74c3c" onPress={details}/>
     </View>
   );
 }

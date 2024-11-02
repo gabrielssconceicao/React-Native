@@ -8,16 +8,25 @@ import {
   Alert
 } from 'react-native';
 import {useFuncionario} from '../database/useFuncionario'
+import {useObraFuncionario} from '../database/useObraFuncionario'
 
 export function MostarFuncionarios({ close }) {
   const [funcionarios, setFuncionarios] = useState([]);
   const useFuncionarios=useFuncionario();
-  const handleMostrar = (funcionario) => {
+  const useObraFuncionarios =useObraFuncionario();
+  const handleMostrar =async (funcionario) => {
+    try {
+
+      // Fazer um modal
+      const {result}= await useObraFuncionarios.getObrasPorFuncionario(funcionario.id)
+      const str = result.map(r=> r.nome).join('-')
     Alert.alert(
       'Detalhes do Funcionário',
-      `Nome: ${funcionario.nome}\nProfissão: ${funcionario.profissao}\nSalário: ${funcionario.salario}\nObra: ${funcionario.obra}`
+      `Nome: ${funcionario.nome}\nProfissão: ${funcionario.profissao}\nSalário: ${funcionario.salario}\nObra: ${str}`
     );
-    // pegar obras em que estão
+    } catch {
+      Alert.alert(error);
+    }
   };
   useEffect(()=>{
     const getAll = async ()=>{
