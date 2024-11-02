@@ -1,32 +1,35 @@
 import { useState, useEffect } from 'react';
-import {Alert, View, Text, FlatList, TouchableOpacity, Modal,StyleSheet } from 'react-native';
+import {
+  Alert,
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  StyleSheet,
+} from 'react-native';
 import { useFuncionario } from '../database/useFuncionario';
-export function DemitirFuncionario({close}) {
+export function DemitirFuncionario({ close }) {
   const [modalVisibleConfirmacaoExclusao, setModalVisibleConfirmacaoExclusao] =
     useState(false);
-  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState({})
+  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState({});
   const [funcionarios, setFuncionarios] = useState([]);
   const useFuncionarios = useFuncionario();
+
   const handleDemissao = (funcionario) => {
     setFuncionarioSelecionado(funcionario);
+
     setModalVisibleConfirmacaoExclusao(true);
   };
 
-  const confirmDelete = () => {
-    if (funcionarioSelecionado) {
-      setFuncionarios(
-        funcionarios.filter(
-          (funcionario) => funcionario.nome !== funcionarioSelecionado.nome
-        )
-      );
-      Alert.alert(
-        'Funcionário excluído',
-        `Funcionário: ${funcionarioSelecionado.nome} foi demitido.`
-      );
-      setFuncionarioSelecionado({});
+  const confirmDelete = async () => {
+    try {
+      await useFuncionarios.deleteFuncionario(funcionarioSelecionado.id);
+      setModalVisibleConfirmacaoExclusao(false);
+      close();
+    } catch (error) {
+      Alert.alert(error);
     }
-    setModalVisibleConfirmacaoExclusao(false);
-    close();
   };
 
   useEffect(() => {
@@ -61,9 +64,7 @@ export function DemitirFuncionario({close}) {
               )}
             />
           )}
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={close}>
+          <TouchableOpacity style={styles.closeButton} onPress={close}>
             <Text style={styles.buttonText}>Fechar</Text>
           </TouchableOpacity>
         </View>
@@ -142,4 +143,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
-})
+});
