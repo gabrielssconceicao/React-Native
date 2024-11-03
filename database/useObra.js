@@ -56,5 +56,22 @@ export function useObra() {
     }
   }
 
-  return { createObra, list, getOne };
+  async function deleteObra(id) {
+    const statement = await database.prepareAsync(
+      'DELETE FROM Obra WHERE id = $id'
+    );
+
+    try {
+      await statement.executeAsync({
+        $id: id,
+      });
+      return;
+    } catch (error) {
+      throw error;
+    } finally {
+      statement.finalizeAsync();
+    }
+  }
+
+  return { createObra, list, getOne, deleteObra };
 }

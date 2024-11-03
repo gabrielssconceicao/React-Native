@@ -7,13 +7,12 @@ export default function Tarefas() {
   const [obras, setObras] = useState([]);
   const { list } = useObra();
   const { getAll } = useObraFuncionario();
-
-  useEffect(() => {
-    const getObras = async () => {
+  const getObras = async () => {
       const { result } = await list();
       setObras(result);
       await getAll();
     };
+  useEffect(() => {
     getObras();
   },[]);
 
@@ -25,7 +24,7 @@ export default function Tarefas() {
           data={obras}
           showsHorizontalScrollIndicator={false}
           style={{ alignItems: 'center' }}
-          renderItem={({ item }) => <Obra obra={item} />}
+          renderItem={({ item }) => <Obra obra={item} reload={getObras}/>}
         />
       </View>
     </View>

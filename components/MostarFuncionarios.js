@@ -85,7 +85,7 @@ export function MostarFuncionarios({ close }) {
             </Text>
           </Text>
           <Text style={styles.funcionarioLabel}>Obras:</Text>
-          <FlatList
+          {funcionario.obras?.length > 0 ? <FlatList
             data={funcionario.obras}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
@@ -93,7 +93,7 @@ export function MostarFuncionarios({ close }) {
                 <Text style={styles.obraText}>{item.nome}</Text>
               </View>
             )}
-          />
+          /> : <Text>Este funcionário não está em nehuma obra no momento</Text>}
         </ModalContainer>
       </Modal>
     </ModalContainer>

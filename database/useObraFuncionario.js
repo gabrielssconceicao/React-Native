@@ -16,7 +16,6 @@ export function useObraFuncionario() {
       const exists = await checkResult.getAllAsync();
 
       if (exists.length !== 0) {
-       
         return { result: 'Relação já existe.' };
       }
 
@@ -30,7 +29,6 @@ export function useObraFuncionario() {
         $obraIdd: obraId,
       });
 
-     
       return;
     } catch (error) {
       throw error;
@@ -38,7 +36,6 @@ export function useObraFuncionario() {
       await checkStatement.finalizeAsync();
     }
   }
-
 
   async function getAll() {
     try {
@@ -53,42 +50,64 @@ export function useObraFuncionario() {
   INNER JOIN 
     Obra ON Funcionario_Obra.obra_id = Obra.id;
 `);
-
-      for (const row of result) {
-        console.log(row);
-      }
     } catch (e) {
       throw e;
     }
   }
 
   async function getObrasPorFuncionario(funcionarioId) {
-    const statement = await database.prepareAsync('SELECT O.nome AS nome FROM Funcionario_Obra FO JOIN Obra O ON FO.obra_id = O.id WHERE FO.funcionario_id = $funcionarioId');
+    const statement = await database.prepareAsync(
+      'SELECT O.nome AS nome FROM Funcionario_Obra FO JOIN Obra O ON FO.obra_id = O.id WHERE FO.funcionario_id = $funcionarioId'
+    );
 
     try {
       const result = await statement.executeAsync({
-        $funcionarioId: funcionarioId
-      }) 
-      const allResults = await result.getAllAsync()
-      return {result: allResults}
+        $funcionarioId: funcionarioId,
+      });
+      const allResults = await result.getAllAsync();
+      return { result: allResults };
     } catch (error) {
       throw error;
     }
   }
 
   async function getFuncionariosPorObra(obraId) {
-    const statement = await database.prepareAsync('SELECT  F.nome, F.profissao FROM Funcionario_Obra FO JOIN Funcionarios F ON FO.funcionario_id = F.id WHERE FO.obra_id = $obraId');
+    const statement = await database.prepareAsync(
+      'SELECT  F.nome, F.profissao, F.id FROM Funcionario_Obra FO JOIN Funcionarios F ON FO.funcionario_id = F.id WHERE FO.obra_id = $obraId'
+    );
 
     try {
       const result = await statement.executeAsync({
-        $obraId: obraId
-      }) 
-      const allResults = await result.getAllAsync()
-      return {result: allResults}
+        $obraId: obraId,
+      });
+      const allResults = await result.getAllAsync();
+      return { result: allResults };
     } catch (error) {
       throw error;
     }
   }
 
-  return { relateFuncionarioObra, getAll,getObrasPorFuncionario,getFuncionariosPorObra };
+  async function removeFuncionarioFromObra(id) {
+    const statement = await database.prepareAsync(
+      'DELETE FROM Funcionario_Obra WHERE funcionario_id = $id'
+    );
+
+    try {
+      await statement.executeAsync({
+        $id: id,
+      });
+      return;
+    } catch (error) {
+      throw error;
+    } finally {
+      statement.finalizeAsync();
+    }
+  }
+
+  return {
+    relateFuncionarioObra,
+    getAll,
+    getObrasPorFuncionario,
+    getFuncionariosPorObra,removeFuncionarioFromObra
+  };
 }
