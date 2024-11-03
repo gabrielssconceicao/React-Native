@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { StyleSheet, View, Text,ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFocusEffect } from '@react-navigation/native';
@@ -14,7 +14,7 @@ const MapScreen = () => {
   const loadAddressesWithCoordinates = useCallback(async () => {
     try {
       const { result } = await list();
-      console.log({ result });
+      
       const validMarkers = result
         .filter((address) => address.latitude && address.longitude) // Filtra endereços com coordenadas válidas
         .map((address) => ({
@@ -22,7 +22,7 @@ const MapScreen = () => {
           longitude: address.longitude,
           title: `${address.rua}, ${address.bairro}, ${address.cidade}`,
         }));
-      console.log({ validMarkers });
+      
 
       setMarkers(validMarkers); // Atualiza os marcadores no estado
     } catch (error) {
@@ -86,7 +86,10 @@ const MapScreen = () => {
           ))}
         </MapView>
       ) : (
-        <Text>{errorMsg ? errorMsg : 'Carregando localização...'}</Text>
+        <View style={{justifyContent: 'center', alignItems: 'center',flex:1}}>
+        
+        <ActivityIndicator size="large" color="#0000ff" style={styles.customSize} />
+        </View>
       )}
     </View>
   );
@@ -100,6 +103,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  customSize: {
+    transform: [{ scale: 2.5 }],
+  }
 });
 
 export default MapScreen;
