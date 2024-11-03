@@ -1,107 +1,128 @@
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
-  View,
   Text,
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  Alert
+  Alert,
+  Modal,
+  View,
 } from 'react-native';
-import {useFuncionario} from '../database/useFuncionario'
-import {useObraFuncionario} from '../database/useObraFuncionario'
+import { useFuncionario } from '../database/useFuncionario';
+import { useObraFuncionario } from '../database/useObraFuncionario';
+import { ModalContainer } from './ModalContainer';
 
 export function MostarFuncionarios({ close }) {
   const [funcionarios, setFuncionarios] = useState([]);
-  const useFuncionarios=useFuncionario();
-  const useObraFuncionarios =useObraFuncionario();
-  const handleMostrar =async (funcionario) => {
-    try {
+  const [funcionario, setFuncionario] = useState({});
+  const [modalVisibleFuncionarioInfo, setModalVisibleFuncionarioInfo] =
+    useState(false);
+  const useFuncionarios = useFuncionario();
+  const useObraFuncionarios = useObraFuncionario();
 
-      // Fazer um modal
-      const {result}= await useObraFuncionarios.getObrasPorFuncionario(funcionario.id)
-      const str = result.map(r=> r.nome).join('-')
-    Alert.alert(
-      'Detalhes do Funcionário',
-      `Nome: ${funcionario.nome}\nProfissão: ${funcionario.profissao}\nSalário: ${funcionario.salario}\nObra: ${str}`
-    );
-    } catch {
-      Alert.alert(error);
+  const handleMostrar = async (selectedFuncionario) => {
+    try {
+      const { result } = await useObraFuncionarios.getObrasPorFuncionario(
+        selectedFuncionario.id
+      );
+      setFuncionario({ ...selectedFuncionario, obras: result });
+      setModalVisibleFuncionarioInfo(true);
+    } catch (error) {
+      Alert.alert('Erro', error);
     }
   };
-  useEffect(()=>{
-    const getAll = async ()=>{
-      try {
 
-      const {result}= await useFuncionarios.list();
-      setFuncionarios(result)
-      } catch {
-        Alert.alert(error)
+  useEffect(() => {
+    const getAll = async () => {
+      try {
+        const { result } = await useFuncionarios.list();
+        setFuncionarios(result);
+      } catch (error) {
+        Alert.alert('Erro', error.message);
       }
-    }
-    getAll()
-  },[])
+    };
+    getAll();
+  }, []);
+
   return (
-    <View style={styles.modalContainer}>
-      <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Funcionários Cadastrados</Text>
-        {funcionarios.length === 0 ? (
-          <Text>Nenhum funcionário cadastrado.</Text>
-        ) : (
+    <ModalContainer title={'Funcionários Cadastrados'} closeModal={close}>
+      {funcionarios.length === 0 ? (
+        <Text>Nenhum funcionário cadastrado.</Text>
+      ) : (
+        <FlatList
+          data={funcionarios}
+          keyExtractor={(item) => item.nome}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleMostrar(item)}>
+              <Text style={styles.funcionarioText}>{item.nome}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisibleFuncionarioInfo}
+        onRequestClose={() => setModalVisibleFuncionarioInfo(false)}>
+        <ModalContainer
+          title={'Informações do Funcionário'}
+          closeModal={() => setModalVisibleFuncionarioInfo(false)}>
+          <Text style={styles.funcionarioLabel}>
+            Nome:{' '}
+            <Text style={styles.funcionarioLabelText}>{funcionario.nome}</Text>
+          </Text>
+          <Text style={styles.funcionarioLabel}>
+            Salario:{' '}
+            <Text style={styles.funcionarioLabelText}>
+              {funcionario.salario ? `${funcionario.salario.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}` : ''}
+            </Text>
+          </Text>
+          <Text style={styles.funcionarioLabel}>
+            Profissão:{' '}
+            <Text style={styles.funcionarioLabelText}>
+              {funcionario.profissao}
+            </Text>
+          </Text>
+          <Text style={styles.funcionarioLabel}>Obras:</Text>
           <FlatList
-            data={funcionarios}
-            keyExtractor={(item) => item.nome}
+            data={funcionario.obras}
+            keyExtractor={(item) => item}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleMostrar(item)}>
-                <Text style={styles.funcionarioText}>{item.nome}</Text>
-              </TouchableOpacity>
+              <View style={styles.obraItem}>
+                <Text style={styles.obraText}>{item.nome}</Text>
+              </View>
             )}
           />
-        )}
-        <TouchableOpacity style={styles.closeButton} onPress={close}>
-          <Text style={styles.buttonText}>Fechar</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+        </ModalContainer>
+      </Modal>
+    </ModalContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
   funcionarioText: {
     padding: 10,
     fontSize: 16,
     color: '#333',
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
+  funcionarioLabel: {
+    fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
-closeButton: {
-    backgroundColor: '#ccc',
+  funcionarioLabelText: {
+    fontSize: 20,
+    fontWeight: 'normal',
+  },
+  obraItem: {
     padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    marginBottom: 5,
+    backgroundColor: '#ccc',
+    borderRadius: 10,
   },
-  
+  obraText: {
+    fontSize: 18,
+  },
 });

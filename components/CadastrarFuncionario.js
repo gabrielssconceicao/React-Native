@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import {
-  View,
   TextInput,
   TouchableOpacity,
   Text,
@@ -11,6 +10,7 @@ import {
 } from 'react-native';
 import { useObra } from '../database/useObra';
 import { useFuncionario } from '../database/useFuncionario';
+import { ModalContainer } from './ModalContainer';
 export function CadastarFuncionario({ close }) {
   const [nome, setNome] = useState('1');
   const [profissao, setProfissao] = useState('1');
@@ -38,13 +38,13 @@ export function CadastarFuncionario({ close }) {
     const getAllObras = async () => {
       try {
         const { result } = await useObras.list();
-      const transformedData = result.map((item) => ({
-        label: item.nome,
-        value: item.id,
-      }));
-      setObras(transformedData);
-      } catch( error) {
-        Alert.alert(error)
+        const transformedData = result.map((item) => ({
+          label: item.nome,
+          value: item.id,
+        }));
+        setObras(transformedData);
+      } catch (error) {
+        Alert.alert(error);
       }
     };
 
@@ -52,103 +52,71 @@ export function CadastarFuncionario({ close }) {
   }, []);
 
   return (
-    <View style={styles.modalContainer}>
-      <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Cadastro de Funcionários</Text>
-        <TextInput
-          placeholder="Nome"
-          value={nome}
-          onChangeText={setNome}
-          style={styles.input}
-          placeholderTextColor="#000" // Cor do texto do placeholder
-        />
-        <TextInput
-          placeholder="Profissão"
-          value={profissao}
-          onChangeText={setProfissao}
-          style={styles.input}
-          placeholderTextColor="#000" // Cor do texto do placeholder
-        />
-        <TextInput
-          placeholder="Salário"
-          value={salario}
-          onChangeText={setSalario}
-          keyboardType="numeric"
-          style={styles.input}
-          placeholderTextColor="#000" // Cor do texto do placeholder
-        />
-        <TouchableOpacity
-          style={styles.input}
-          onPress={() => setModalVisibleObra(true)}>
-          <Text style={styles.inputText}>
-            {selectedObra
-              ? `Obra Selecionada: ${selectedObra}`
-              : 'Selecione uma Obra'}
-          </Text>
-        </TouchableOpacity>
+    <ModalContainer title={'Cadastro de Funcionários'} closeModal={close}>
+      <TextInput
+        placeholder="Nome"
+        value={nome}
+        onChangeText={setNome}
+        style={styles.input}
+        placeholderTextColor="#000" // Cor do texto do placeholder
+      />
+      <TextInput
+        placeholder="Profissão"
+        value={profissao}
+        onChangeText={setProfissao}
+        style={styles.input}
+        placeholderTextColor="#000" // Cor do texto do placeholder
+      />
+      <TextInput
+        placeholder="Salário"
+        value={salario}
+        onChangeText={setSalario}
+        keyboardType="numeric"
+        style={styles.input}
+        placeholderTextColor="#000" // Cor do texto do placeholder
+      />
+      <TouchableOpacity
+        style={styles.input}
+        onPress={() => setModalVisibleObra(true)}>
+        <Text style={styles.inputText}>
+          {selectedObra
+            ? `Obra Selecionada: ${selectedObra}`
+            : 'Selecione uma Obra'}
+        </Text>
+      </TouchableOpacity>
 
-        {/* Modal para selecionar a obra */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisibleObra}
-          onRequestClose={() => setModalVisibleObra(false)}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Selecione uma Obra</Text>
-              <FlatList
-                data={obras}
-                keyExtractor={(item) => item.value}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectedObra(item.value);
-                      setModalVisibleObra(false);
-                    }}>
-                    <Text style={styles.obraText}>{item.label}</Text>
-                  </TouchableOpacity>
-                )}
-              />
+      {/* Modal para selecionar a obra */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisibleObra}
+        onRequestClose={() => setModalVisibleObra(false)}>
+        <ModalContainer
+          title={'Selecione uma Obra'}
+          closeModal={() => setModalVisibleObra(false)}>
+          <FlatList
+            data={obras}
+            keyExtractor={(item) => item.value}
+            renderItem={({ item }) => (
               <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setModalVisibleObra(false)}>
-                <Text style={styles.buttonText}>Fechar</Text>
+                onPress={() => {
+                  setSelectedObra(item.value);
+                  setModalVisibleObra(false);
+                }}>
+                <Text style={styles.obraText}>{item.label}</Text>
               </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-
-        <TouchableOpacity style={styles.greenButton} onPress={handleCadastro}>
-          <Text style={styles.buttonText}>Cadastrar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.closeButton} onPress={close}>
-          <Text style={styles.buttonText}>Fechar</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+            )}
+          />
+        </ModalContainer>
+      </Modal>
+      <TouchableOpacity style={styles.greenButton} onPress={handleCadastro}>
+        <Text style={styles.buttonText}>Cadastrar</Text>
+      </TouchableOpacity>
+    </ModalContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
   input: {
     height: 40,
     borderColor: '#ccc',
@@ -175,13 +143,6 @@ const styles = StyleSheet.create({
   },
   greenButton: {
     backgroundColor: '#28a745', // Cor verde
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  closeButton: {
-    backgroundColor: '#ccc',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',

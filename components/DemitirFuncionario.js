@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   Alert,
-  View,
   Text,
   FlatList,
   TouchableOpacity,
@@ -9,6 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useFuncionario } from '../database/useFuncionario';
+import { ModalContainer } from './ModalContainer';
 export function DemitirFuncionario({ close }) {
   const [modalVisibleConfirmacaoExclusao, setModalVisibleConfirmacaoExclusao] =
     useState(false);
@@ -45,86 +45,47 @@ export function DemitirFuncionario({ close }) {
   }, []);
 
   return (
-    <>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>
-            Selecionar Funcionário para Demissão
-          </Text>
-          {funcionarios.length === 0 ? (
-            <Text>Nenhum funcionário cadastrado.</Text>
-          ) : (
-            <FlatList
-              data={funcionarios}
-              keyExtractor={(item) => item.nome}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => handleDemissao(item)}>
-                  <Text style={styles.funcionarioText}>{item.nome}</Text>
-                </TouchableOpacity>
-              )}
-            />
+    <ModalContainer
+      title={' Selecionar Funcionário para Demissão'}
+      closeModal={close}>
+      {funcionarios.length === 0 ? (
+        <Text>Nenhum funcionário cadastrado.</Text>
+      ) : (
+        <FlatList
+          data={funcionarios}
+          keyExtractor={(item) => item.nome}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleDemissao(item)}>
+              <Text style={styles.funcionarioText}>{item.nome}</Text>
+            </TouchableOpacity>
           )}
-          <TouchableOpacity style={styles.closeButton} onPress={close}>
-            <Text style={styles.buttonText}>Fechar</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        />
+      )}
       {/* Modal de Confirmação de Exclusão */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisibleConfirmacaoExclusao}
         onRequestClose={() => setModalVisibleConfirmacaoExclusao(false)}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Confirmação de Demissão</Text>
-            <Text>
-              Deseja excluir o funcionário {funcionarioSelecionado?.nome}?
-            </Text>
-            <TouchableOpacity
-              style={styles.confirmButton}
-              onPress={confirmDelete}>
-              <Text style={styles.buttonText}>Excluir</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisibleConfirmacaoExclusao(false)}>
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <ModalContainer
+          title={'Confirmação de Demissão'}
+          closeModal={() => setModalVisibleConfirmacaoExclusao(false)}
+          closeButtonText={'Cancelar'}>
+          <Text>
+            Deseja excluir o funcionário {funcionarioSelecionado?.nome}?
+          </Text>
+          <TouchableOpacity
+            style={styles.confirmButton}
+            onPress={confirmDelete}>
+            <Text style={styles.buttonText}>Excluir</Text>
+          </TouchableOpacity>
+        </ModalContainer>
       </Modal>
-    </>
+    </ModalContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  closeButton: {
-    backgroundColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
-  },
   buttonText: {
     color: '#fff',
     fontSize: 16,
@@ -142,5 +103,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
-  },
+  }
 });
