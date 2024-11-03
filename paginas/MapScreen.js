@@ -1,28 +1,28 @@
-import React, { useState, useCallback,useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFocusEffect } from '@react-navigation/native';
-import {useObra} from '../database/useObra'
+import { useObra } from '../database/useObra';
 
 const MapScreen = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [markers, setMarkers] = useState([]);
-  const {list} = useObra()
+  const { list } = useObra();
 
-  
   const loadAddressesWithCoordinates = useCallback(async () => {
     try {
-      const {result} = await list()
-      console.log(result)
+      const { result } = await list();
+      console.log({ result });
       const validMarkers = result
         .filter((address) => address.latitude && address.longitude) // Filtra endereços com coordenadas válidas
         .map((address) => ({
           latitude: address.latitude,
           longitude: address.longitude,
-          title: `${address.logradouro}, ${address.localidade}, ${address.uf}`,
+          title: `${address.rua}, ${address.bairro}, ${address.cidade}`,
         }));
+      console.log({ validMarkers });
 
       setMarkers(validMarkers); // Atualiza os marcadores no estado
     } catch (error) {
@@ -51,7 +51,10 @@ const MapScreen = () => {
       // Carrega endereços do AsyncStorage e atualiza os marcadores
       await loadAddressesWithCoordinates();
     } catch (error) {
-      console.error('Erro ao solicitar localização ou carregar endereços:', error);
+      console.error(
+        'Erro ao solicitar localização ou carregar endereços:',
+        error
+      );
       setErrorMsg('Ocorreu um erro ao carregar a localização ou endereços.');
     }
   }, [loadAddressesWithCoordinates]);
@@ -68,8 +71,7 @@ const MapScreen = () => {
         <MapView
           style={styles.map}
           initialRegion={location}
-          showsUserLocation={true}
-        >
+          showsUserLocation={true}>
           <Marker coordinate={location} title="Minha Localização" />
           {/* Exibe os marcadores no mapa */}
           {markers.map((marker, index) => (

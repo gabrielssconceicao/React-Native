@@ -18,7 +18,7 @@ const CadastroObras = () => {
   const [data, setData] = useState(new Date());
   const [dataString, setDataString] = useState('');
   const [showPicker, setShowPicker] = useState(false);
-  const [cep, setCep] = useState('21635290');
+  const [cep, setCep] = useState('');
   const [fullAdress, setFullAdress] = useState({});
   const [numero, setNumero] = useState('');
   const [complemento, setComplemento] = useState('');

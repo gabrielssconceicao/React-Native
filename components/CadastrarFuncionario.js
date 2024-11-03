@@ -12,8 +12,8 @@ import { useObra } from '../database/useObra';
 import { useFuncionario } from '../database/useFuncionario';
 import { ModalContainer } from './ModalContainer';
 export function CadastarFuncionario({ close }) {
-  const [nome, setNome] = useState('1');
-  const [profissao, setProfissao] = useState('1');
+  const [nome, setNome] = useState('');
+  const [profissao, setProfissao] = useState('');
   const [salario, setSalario] = useState(0);
   const [selectedObra, setSelectedObra] = useState(0);
   const [modalVisibleObra, setModalVisibleObra] = useState(false);
@@ -33,7 +33,7 @@ export function CadastarFuncionario({ close }) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
     }
   };
-
+  
   useEffect(() => {
     const getAllObras = async () => {
       try {
